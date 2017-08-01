@@ -5,20 +5,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.SeekBar;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class MainActivity extends AppCompatActivity {
 
     private SeekBar seekBar;
-    private Timer timer;
+    private BubbleProgressBar mBubbleProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final BubbleProgressBar simpleProgress = (BubbleProgressBar) findViewById(R.id.progress);
+        mBubbleProgressBar = (BubbleProgressBar) findViewById(R.id.progress);
 
         final BubbleView bubbleView = (BubbleView) findViewById(R.id.bubble);
 
@@ -27,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                simpleProgress.setProgress(progress);
+                mBubbleProgressBar.setProgress(progress);
                 bubbleView.setProgressText(progress + "%");
 
             }
@@ -44,21 +41,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        simpleProgress.incrementProgressBy(1);
-                    }
-                });
-            }
-        }, 1000, 100);
     }
 
     public void start(View view) {
+        new SecondTimer(100) {
 
+            @Override
+            public void onFinish() {
+
+            }
+
+            @Override
+            protected void onTicker(long second) {
+                mBubbleProgressBar.setProgress((int) second);
+            }
+        }.start();
     }
 }
