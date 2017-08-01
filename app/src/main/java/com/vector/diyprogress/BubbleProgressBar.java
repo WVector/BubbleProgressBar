@@ -341,13 +341,13 @@ public class BubbleProgressBar extends View {
 
         Log.e("BubbleProgressBar", "degrees:" + degrees);
 
-        if (degrees < -60) {
+        if (degrees < -45) {
 
-            degrees = -60;
+            degrees = -45;
         }
 
-        if (degrees > 60) {
-            degrees = 60;
+        if (degrees > 45) {
+            degrees = 45;
         }
 
         return degrees;
