@@ -29,9 +29,9 @@
         android:layout_weight="1"/>
 
     <Button
-        android:onClick="start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="start"
         android:text="开始"/>
     <SeekBar
         android:id="@+id/seek_bar"

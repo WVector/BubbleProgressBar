@@ -12,8 +12,8 @@ import java.util.Properties;
 class BubbleUtils {
 
     private static final File BUILD_PROP_FILE = new File(Environment.getRootDirectory(), "build.prop");
-    private static Properties sBuildProperties;
     private static final Object sBuildPropertiesLock = new Object();
+    private static Properties sBuildProperties;
 
     private static Properties getBuildProperties() {
         synchronized (sBuildPropertiesLock) {

@@ -22,6 +22,7 @@ public class TestView extends View {
     private Paint mBubblePaint;
     private Path mBubblePath;
     private float mDegrees = 0.0F;
+    private int mBubbleRadius = 100;
 
     public TestView(Context context) {
         this(context, null);
@@ -74,8 +75,6 @@ public class TestView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         setMeasuredDimension(6 * mBubbleRadius, 3 * mBubbleRadius);
     }
-
-    private int mBubbleRadius = 100;
 
     @Override
     protected void onDraw(Canvas canvas) {

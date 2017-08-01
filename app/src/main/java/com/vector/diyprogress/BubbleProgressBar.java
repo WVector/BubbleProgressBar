@@ -25,6 +25,24 @@ public class BubbleProgressBar extends View {
     private Paint mBubbleTextPaint;
     private Path mBubblePath;
     private Path mBubbleTextPath;
+    private Paint mUnreachedBarPaint;
+    private Paint mReachedBarPaint;
+    private PaintFlagsDrawFilter mDrawFilter;
+    private int mBubbleColor = 0xffff3366;
+    private int mBubbleTextColor = Color.WHITE;
+    private int mReachedBarColor = 0xffff3366;
+    private int mUnreachedBarColor = Color.GRAY;
+    private int mProgress = 0;
+    private int mBarWidth = 15;
+    private int mBubbleRadius = 45;
+    private float mBubbleTextSize = mBubbleRadius * 0.75f;
+    private float mDegrees = 30.0F;
+    private Rect mRect;
+    private long lastTime = 0;
+    //速度
+    private float velocity;
+    //加速度
+    private float acceleration;
 
 
     public BubbleProgressBar(Context context) {
@@ -86,23 +104,6 @@ public class BubbleProgressBar extends View {
         mBubbleTextPath = new Path();
         mRect = new Rect();
     }
-
-    private Paint mUnreachedBarPaint;
-    private Paint mReachedBarPaint;
-    private PaintFlagsDrawFilter mDrawFilter;
-    private int mBubbleColor = 0xffff3366;
-    private int mBubbleTextColor = Color.WHITE;
-    private int mReachedBarColor = 0xffff3366;
-    private int mUnreachedBarColor = Color.GRAY;
-    private int mProgress = 0;
-    private int mBarWidth = 15;
-    private int mBubbleRadius = 45;
-    private float mBubbleTextSize = mBubbleRadius * 0.75f;
-
-
-    private float mDegrees = 30.0F;
-
-    private Rect mRect;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -229,12 +230,6 @@ public class BubbleProgressBar extends View {
     private float getCurrentX() {
         return (getStopX() - getStartX()) * getProgress() * 0.01F + getStartX();
     }
-
-    private long lastTime = 0;
-    //速度
-    private float velocity;
-    //加速度
-    private float acceleration;
 
     public int getProgress() {
 
