@@ -337,17 +337,19 @@ public class BubbleProgressBar extends View {
 
         //-60---60
 
-        float degrees = acceleration / 10f * 60;
+        int range = 45;
+
+        float degrees = acceleration / 10f * range;
 
         Log.e("BubbleProgressBar", "degrees:" + degrees);
 
-        if (degrees < -45) {
+        if (degrees < -range) {
 
-            degrees = -45;
+            degrees = -range;
         }
 
-        if (degrees > 45) {
-            degrees = 45;
+        if (degrees > range) {
+            degrees = range;
         }
 
         return degrees;
