@@ -1,9 +1,21 @@
 package com.vector.diyprogress;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.Toast;
+
+import com.vector.library.BubbleProgressBar;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.FileCallBack;
+
+import java.io.File;
+
+import okhttp3.Call;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,9 +27,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        OkHttpUtils.getInstance()
+                .init(this)
+                .debug(true, "okHttp")
+                .timeout(20 * 1000);
+
         mBubbleProgressBar = (BubbleProgressBar) findViewById(R.id.progress);
 
-        final BubbleView bubbleView = (BubbleView) findViewById(R.id.bubble);
 
         seekBar = (SeekBar) findViewById(R.id.seek_bar);
 
@@ -25,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mBubbleProgressBar.setProgress(progress);
-                bubbleView.setProgressText(progress + "%");
 
             }
 
@@ -43,18 +58,34 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     public void start(View view) {
-        new SecondTimer(100) {
+        OkHttpUtils.get()
+                .url("http://47.94.102.201:80/online/appDownFile/yimiao.apk")
+                .build()
+                .execute(new FileCallBack(Environment.getExternalStorageDirectory().getAbsolutePath(), "yimiao.apk") {
+                    @Override
+                    public void inProgress(float progress, long total, int id) {
+                        int round = Math.round(progress * 100);
+                        mBubbleProgressBar.setProgress(round);
+                    }
 
-            @Override
-            public void onFinish() {
+                    @Override
+                    public void onError(Call call, Response response, Exception e, int id) {
+                        Toast.makeText(MainActivity.this, validateError(e, response), Toast.LENGTH_SHORT).show();
+                    }
 
-            }
+                    @Override
+                    public void onResponse(File response, int id) {
 
-            @Override
-            protected void onTicker(long second) {
-                mBubbleProgressBar.setProgress((int) second);
-            }
-        }.start();
+                    }
+
+                    @Override
+                    public void onBefore(Request request, int id) {
+                        super.onBefore(request, id);
+                    }
+                });
+
+
     }
 }

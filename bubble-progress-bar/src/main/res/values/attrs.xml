@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BubbleProgressBar">
+        <attr name="bubble_color" format="color"/>
+        <attr name="bubble_text_color" format="color"/>
+        //进度条已完成颜色
+        <attr name="reached_bar_color" format="color"/>
+        //进度条未完成颜色
+        <attr name="unreached_bar_color" format="color"/>
+        //进度条宽度
+        <attr name="progress_bar_with" format="dimension"/>
+        //气泡半径
+        <attr name="bubble_radius" format="dimension"/>
+    </declare-styleable>
+</resources>

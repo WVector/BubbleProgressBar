@@ -1,6 +1,8 @@
-package com.vector.diyprogress;
+package com.vector.library;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -9,10 +11,10 @@ import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 
 /**
  * Created by Vector
@@ -31,42 +33,84 @@ public class BubbleProgressBar extends View {
     private int mBubbleColor = 0xffff3366;
     private int mBubbleTextColor = Color.WHITE;
     private int mReachedBarColor = 0xffff3366;
-    private int mUnreachedBarColor = Color.GRAY;
+    private int mUnreachedBarColor = 0XFFCCCCCC;
     private int mProgress = 0;
     private int mBarWidth = 15;
     private int mBubbleRadius = 45;
-    private float mBubbleTextSize = mBubbleRadius * 0.75f;
-    private float mDegrees = 30.0F;
+    private float mDegrees = 0.0F;
     private Rect mRect;
-    private long lastTime = 0;
-    //速度
-    private float velocity;
-    //加速度
-    private float acceleration;
+    private AccelerationComputer mAccelerationComputer;
+    private ValueAnimator mValueAnimator;
 
 
     public BubbleProgressBar(Context context) {
         this(context, null);
     }
 
-    public BubbleProgressBar(Context context, @Nullable AttributeSet attrs) {
+    public BubbleProgressBar(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public BubbleProgressBar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public BubbleProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context, attrs, defStyleAttr);
     }
 
-    private void init() {
+    /**
+     * 初始化
+     */
+    private void init(Context context, AttributeSet attrs, int defStyleAttr) {
+        //获取初始化值
+        //对界面的临界值，进行计算
 
+        initValues(context, attrs, defStyleAttr);
+
+        mAccelerationComputer = new AccelerationComputer();
+
+    }
+
+    private void initValues(Context context, AttributeSet attrs, int defStyleAttr) {
+        TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.BubbleProgressBar, defStyleAttr, 0);
+        //气泡颜色
+        mBubbleColor = attributes.getColor(R.styleable.BubbleProgressBar_bubble_color, mBubbleColor);
+        //气泡文字颜色
+        mBubbleTextColor = attributes.getColor(R.styleable.BubbleProgressBar_bubble_text_color, mBubbleTextColor);
+        //进度条已完成颜色
+        mReachedBarColor = attributes.getColor(R.styleable.BubbleProgressBar_reached_bar_color, mReachedBarColor);
+        //进度条未完成颜色
+        mUnreachedBarColor = attributes.getColor(R.styleable.BubbleProgressBar_unreached_bar_color, mUnreachedBarColor);
+        //进度条宽度
+        mBarWidth = (int) attributes.getDimension(R.styleable.BubbleProgressBar_progress_bar_with, mBarWidth);
+        //气泡半径
+        mBubbleRadius = (int) attributes.getDimension(R.styleable.BubbleProgressBar_bubble_radius, mBubbleRadius);
+
+        attributes.recycle();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+
+        int radius = (getMeasuredHeight() - getPaddingBottom() - getPaddingTop()) / 6;
+
+        Log.d("BubbleProgressBar", "radius:" + radius);
+
+        if (mBubbleRadius > radius) {
+            mBubbleRadius = radius;
+        }
+
+        
         initPainters();
+    }
 
+    /**
+     * 初始化画笔
+     */
+    private void initPainters() {
         //画布抗锯齿
         mDrawFilter = new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-    }
 
-    private void initPainters() {
         mReachedBarPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mReachedBarPaint.setAntiAlias(true);
         mReachedBarPaint.setStyle(Paint.Style.FILL);
@@ -108,6 +152,13 @@ public class BubbleProgressBar extends View {
     @Override
     protected void onDraw(Canvas canvas) {
 
+        Log.d("BubbleProgressBar", "绘制" + getProgress());
+
+        if (getProgress() == 100) {
+            //矫正
+            mDegrees = 0;
+        }
+
         canvas.setDrawFilter(getDrawFilter());
 
         float currentX = getCurrentX();
@@ -117,6 +168,10 @@ public class BubbleProgressBar extends View {
 
 
         drawBubble(canvas, currentX, currentY);
+
+//        if (getProgress() != 0 && getProgress() != 100) {
+//        }
+//        postInvalidateDelayed(20);
 
     }
 
@@ -237,31 +292,41 @@ public class BubbleProgressBar extends View {
         return mProgress;
     }
 
+    /**
+     * 设置进度
+     *
+     * @param progress 当前进度
+     */
     public void setProgress(int progress) {
         progress = progress > 100 ? 100 : progress;
-
-        long currentTime = System.currentTimeMillis();
-
-        if (lastTime == 0) {
-            lastTime = currentTime;
-        } else {
-            long dTime = currentTime - lastTime;
-
-            float tempVelocity = (progress - this.mProgress) * 1000 * 10f / dTime;
-
-
-            acceleration = (tempVelocity - velocity) * 1f / dTime;
-
-            Log.d("BubbleProgressBar", "tempVelocity:" + tempVelocity + "   acceleration:" + acceleration);
-
-            velocity = tempVelocity;
-            lastTime = currentTime;
-
-        }
-
-
         this.mProgress = progress;
+
+
+        int range = 10;
+
+        float v = -mAccelerationComputer.getAcceler(getProgress());
+
+
+        if (mValueAnimator != null) {
+            mValueAnimator.cancel();
+        }
+        mValueAnimator = ValueAnimator
+                .ofFloat(mDegrees, v * range)
+                .setDuration(Math.abs((long) (1000 * ((mDegrees - v * range) / 90))));
+        mValueAnimator.setInterpolator(new LinearInterpolator());
+        mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mDegrees = (float) animation.getAnimatedValue();
+                Log.d("BubbleProgressBar", "mDegrees:" + mDegrees);
+                invalidate();
+            }
+        });
+        mValueAnimator.start();
+
         invalidate();
+
+
     }
 
     public int getReachedBarColor() {
@@ -317,7 +382,7 @@ public class BubbleProgressBar extends View {
     }
 
     public float getBubbleTextSize() {
-        return mBubbleTextSize;
+        return mBubbleRadius * 0.7f;
     }
 
     public int getBubbleRadius() {
@@ -333,26 +398,7 @@ public class BubbleProgressBar extends View {
     }
 
     public float getDegrees() {
-
-
-        //-60---60
-
-        int range = 45;
-
-        float degrees = acceleration / 10f * range;
-
-        Log.e("BubbleProgressBar", "degrees:" + degrees);
-
-        if (degrees < -range) {
-
-            degrees = -range;
-        }
-
-        if (degrees > range) {
-            degrees = range;
-        }
-
-        return degrees;
+        return mDegrees;
     }
 
     public void incrementProgressBy(int by) {

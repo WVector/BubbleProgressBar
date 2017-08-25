@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.vector.diyprogress.MainActivity">
 
-    <com.vector.diyprogress.BubbleProgressBar
+    <com.vector.library.BubbleProgressBar
         android:id="@+id/progress"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="200dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="10dp"
+        app:bubble_color="#123456"
+        app:bubble_radius="50dp"
+        app:progress_bar_with="1dp"
+        app:reached_bar_color="@color/colorAccent"
+        app:unreached_bar_color="@color/colorPrimary"
         />
-
-
-    <com.vector.diyprogress.BubbleView
-        android:id="@+id/bubble"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <com.vector.diyprogress.TestView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
     <View
         android:layout_width="match_parent"
@@ -33,6 +33,7 @@
         android:layout_height="wrap_content"
         android:onClick="start"
         android:text="开始"/>
+
     <SeekBar
         android:id="@+id/seek_bar"
         android:layout_width="match_parent"
