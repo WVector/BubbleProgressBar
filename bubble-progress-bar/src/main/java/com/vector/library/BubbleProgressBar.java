@@ -100,7 +100,7 @@ public class BubbleProgressBar extends View {
             mBubbleRadius = radius;
         }
 
-        
+
         initPainters();
     }
 
@@ -169,9 +169,6 @@ public class BubbleProgressBar extends View {
 
         drawBubble(canvas, currentX, currentY);
 
-//        if (getProgress() != 0 && getProgress() != 100) {
-//        }
-//        postInvalidateDelayed(20);
 
     }
 
@@ -301,7 +298,6 @@ public class BubbleProgressBar extends View {
         progress = progress > 100 ? 100 : progress;
         this.mProgress = progress;
 
-
         int range = 10;
 
         float v = -mAccelerationComputer.getAcceler(getProgress());
@@ -318,7 +314,6 @@ public class BubbleProgressBar extends View {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mDegrees = (float) animation.getAnimatedValue();
-                Log.d("BubbleProgressBar", "mDegrees:" + mDegrees);
                 invalidate();
             }
         });

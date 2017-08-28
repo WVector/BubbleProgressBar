@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SeekBar seekBar;
     private BubbleProgressBar mBubbleProgressBar;
+    private Button mBtnStart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
                 .init(this)
                 .debug(true, "okHttp")
                 .timeout(20 * 1000);
+
+        mBtnStart = (Button) findViewById(R.id.btn_start);
 
         mBubbleProgressBar = (BubbleProgressBar) findViewById(R.id.progress);
 
@@ -73,16 +77,19 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onError(Call call, Response response, Exception e, int id) {
                         Toast.makeText(MainActivity.this, validateError(e, response), Toast.LENGTH_SHORT).show();
+                        mBtnStart.setEnabled(true);
                     }
 
                     @Override
                     public void onResponse(File response, int id) {
-
+                        mBtnStart.setEnabled(true);
                     }
 
                     @Override
                     public void onBefore(Request request, int id) {
                         super.onBefore(request, id);
+                        mBtnStart.setEnabled(false);
+
                     }
                 });
 
