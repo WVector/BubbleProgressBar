@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void start(View view) {
         OkHttpUtils.get()
-                .url("http://47.94.102.201:80/online/appDownFile/yimiao.apk")
+                .url("http://dldir1.qq.com/weixin/android/weixin6513android1100.apk")
                 .build()
                 .execute(new FileCallBack(Environment.getExternalStorageDirectory().getAbsolutePath(), "yimiao.apk") {
                     @Override

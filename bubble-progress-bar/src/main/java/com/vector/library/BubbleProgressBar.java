@@ -159,6 +159,8 @@ public class BubbleProgressBar extends View {
             mDegrees = 0;
         }
 
+        Log.d("BubbleProgressBar", "mDegrees:" + mDegrees);
+
         canvas.setDrawFilter(getDrawFilter());
 
         float currentX = getCurrentX();
@@ -314,12 +316,12 @@ public class BubbleProgressBar extends View {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mDegrees = (float) animation.getAnimatedValue();
-                invalidate();
+                postInvalidate();
             }
         });
         mValueAnimator.start();
 
-        invalidate();
+        postInvalidate();
 
 
     }
