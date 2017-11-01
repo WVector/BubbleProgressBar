@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
                 .debug(true, "okHttp")
                 .timeout(20 * 1000);
 
+
         mBtnStart = (Button) findViewById(R.id.btn_start);
 
         mBubbleProgressBar = (BubbleProgressBar) findViewById(R.id.progress);
