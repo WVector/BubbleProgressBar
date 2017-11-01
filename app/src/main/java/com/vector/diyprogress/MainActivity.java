@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         mBtnStart = (Button) findViewById(R.id.btn_start);
 
+
         mBubbleProgressBar = (BubbleProgressBar) findViewById(R.id.progress);
 
 
